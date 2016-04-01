@@ -25,7 +25,7 @@ As we use some maven filtering, we expect to find the filtered `probedock.yml` w
 version in `Project Root/target/test-classes/probedock.yml`. Once you ensured to have run the tests from the root project, you can
 run the tests on each submodules independently by running `mvn clean install` in the submodule of your choice.
 
-# More details?
+## More details?
 
 For more information about the Maven configuration, take a look to these files:
 
