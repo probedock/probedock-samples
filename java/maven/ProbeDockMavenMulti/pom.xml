@@ -48,15 +48,15 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<!-- 
-			The path to the configuration that will allow to run each module independently and from 
+		<!--
+			The path to the configuration that will allow to run each module independently and from
 			the root pom project.
 			Take a look to pom.xml of Module 4 to see that we override this property for deeper submodules.
-			ATTENTION: The file is palced in /target of the root pom project because we use a maven filter 
-								 to set the project version. Because of that, it will not be possible to send the tests
-								 results to Probe Dock if the root pom project is not run a first time before the other
-								 modules. If you do not want to use maven filtering, you can use src/main/resources to
-								 store the file.
+			ATTENTION: The file is palced in /target of the root pom project because we use a maven filter
+			           to set the project version. Because of that, it will not be possible to send the tests
+			           results to Probe Dock if the root pom project is not run a first time before the other
+			           modules. If you do not want to use maven filtering, you can use src/main/resources to
+			           store the file.
 		-->
 		<probedock.config.file>${basedir}/../target/test-classes/probedock.yml</probedock.config.file>
 	</properties>
@@ -124,16 +124,16 @@
 							</property>
 						</properties>
 						<environmentVariables>
-							<!-- 
+							<!--
 								Configuring this environement variable will give to the probe the absolute path to the config file.
 								See the properties at the top of this file to see how we set the value of probedock.config.file
 							-->
 							<PROBEDOCK_CONFIG>${probedock.config.file}</PROBEDOCK_CONFIG>
-							
-							<!-- 
+
+							<!--
 								This env var allows the tests results of multi modules to be collected in the same report when
 								we run the tests from the root pom project.
-								The value is generated through the probedock-uuid-maven-plugin. 
+								The value is generated through the probedock-uuid-maven-plugin.
 								Take a look in the build configuration to see it is used.
 							-->
 							<PROBEDOCK_TEST_REPORT_UID>${probedock.report.uuid}</PROBEDOCK_TEST_REPORT_UID>
@@ -146,7 +146,7 @@
 					<artifactId>maven-deploy-plugin</artifactId>
 					<version>2.8.2</version>
 				</plugin>
-				
+
 				<plugin>
 					<groupId>io.probedock.maven.plugins</groupId>
 					<artifactId>probedock-uuid-maven-plugin</artifactId>
@@ -154,7 +154,7 @@
 				</plugin>
 			</plugins>
 		</pluginManagement>
-		
+
 		<plugins>
 			<plugin>
 				<groupId>io.probedock.maven.plugins</groupId>
@@ -175,7 +175,7 @@
 					</execution>
 				</executions>
 			</plugin>
-			
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-resources-plugin</artifactId>
@@ -200,7 +200,7 @@
 			</testResource>
 		</testResources>
 	</build>
-	
+
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
