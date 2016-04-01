@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+				 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>io.probedock.test</groupId>
+	<artifactId>probedock-multi</artifactId>
+	<version>0.0.1</version>
+	<packaging>pom</packaging>
+
+	<name>Probe Dock Multi Modules</name>
+	<description>Experiment of a multi modules project.</description>
+
+	<url></url>
+
+	<licenses>
+		<license>
+			<name>MIT License</name>
+			<url>http://www.opensource.org/licenses/mit-license.php</url>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<name>Laurent Prevost</name>
+			<email>laurent.prevost@probedock.io</email>
+			<organization>https://github.com/probedock</organization>
+		</developer>
+	</developers>
+
+	<scm>
+		<connection>scm:git:git@github.com:probedock/</connection>
+		<developerConnection>scm:git:git@github.com:probedock/</developerConnection>
+		<url>git@github.com:probedock/</url>
+	</scm>
+
+	<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+		<repository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+	</distributionManagement>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<!-- 
+			The path to the configuration that will allow to run each module independently and from 
+			the root pom project.
+			Take a look to pom.xml of Module 4 to see that we override this property for deeper submodules.
+			ATTENTION: The file is palced in /target of the root pom project because we use a maven filter 
+								 to set the project version. Because of that, it will not be possible to send the tests
+								 results to Probe Dock if the root pom project is not run a first time before the other
+								 modules. If you do not want to use maven filtering, you can use src/main/resources to
+								 store the file.
+		-->
+		<probedock.config.file>${basedir}/../target/test-classes/probedock.yml</probedock.config.file>
+	</properties>
+
+	<modules>
+		<module>ProbeDockMultiModule1</module>
+		<module>ProbeDockMultiModule2</module>
+		<module>ProbeDockMultiModule3</module>
+		<module>ProbeDockMultiModule4</module>
+	</modules>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.sonatype.plugins</groupId>
+					<artifactId>nexus-staging-maven-plugin</artifactId>
+					<version>1.6.5</version>
+					<extensions>true</extensions>
+					<configuration>
+						<serverId>ossrhProbeDock</serverId>
+						<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+						<autoReleaseAfterClose>true</autoReleaseAfterClose>
+					</configuration>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-clean-plugin</artifactId>
+					<version>2.6.1</version>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-resources-plugin</artifactId>
+					<version>2.7</version>
+					<configuration>
+						<encoding>${project.build.sourceEncoding}</encoding>
+					</configuration>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>3.2</version>
+					<configuration>
+						<encoding>${project.build.sourceEncoding}</encoding>
+						<source>1.7</source>
+						<target>1.7</target>
+						<compilerArgs>
+							<arg>-Xlint</arg>
+						</compilerArgs>
+					</configuration>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>2.18.1</version>
+					<configuration>
+						<properties>
+							<property>
+								<name>listener</name>
+								<value>io.probedock.client.junit.ProbeListener</value>
+							</property>
+						</properties>
+						<environmentVariables>
+							<!-- 
+								Configuring this environement variable will give to the probe the absolute path to the config file.
+								See the properties at the top of this file to see how we set the value of probedock.config.file
+							-->
+							<PROBEDOCK_CONFIG>${probedock.config.file}</PROBEDOCK_CONFIG>
+							
+							<!-- 
+								This env var allows the tests results of multi modules to be collected in the same report when
+								we run the tests from the root pom project.
+								The value is generated through the probedock-uuid-maven-plugin. 
+								Take a look in the build configuration to see it is used.
+							-->
+							<PROBEDOCK_TEST_REPORT_UID>${probedock.report.uuid}</PROBEDOCK_TEST_REPORT_UID>
+						</environmentVariables>
+					</configuration>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-deploy-plugin</artifactId>
+					<version>2.8.2</version>
+				</plugin>
+				
+				<plugin>
+					<groupId>io.probedock.maven.plugins</groupId>
+					<artifactId>probedock-uuid-maven-plugin</artifactId>
+					<version>0.0.1</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+		
+		<plugins>
+			<plugin>
+				<groupId>io.probedock.maven.plugins</groupId>
+				<artifactId>probedock-uuid-maven-plugin</artifactId>
+				<!--
+					The role of this plugin is to ensure that we have one and only one
+					report uid generated per execution context.
+					It means we generate one uid at the beginin of maven execution and
+					we store it in the properties to reuse it.
+					This will ensure that all the tests results executed in from a root
+					pom project will appear in the same report on Probe Dock.
+				-->
+				<executions>
+					<execution>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<!--
+					Filtering to replace ${project.version} by the proper version
+				-->
+				<executions>
+					<execution>
+						<id>filter</id>
+						<goals>
+							<goal>testResources</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+
+		<testResources>
+			<testResource>
+				<directory>src/test/resources</directory>
+				<filtering>true</filtering>
+			</testResource>
+		</testResources>
+	</build>
+	
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>io.probedock.client</groupId>
+				<artifactId>probedock-junit</artifactId>
+				<version>0.5.0</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>4.12</version>
+				<scope>test</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+</project>

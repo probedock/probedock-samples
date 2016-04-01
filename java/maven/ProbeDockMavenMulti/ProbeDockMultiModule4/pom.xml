@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>io.probedock.test</groupId>
+		<artifactId>probedock-multi</artifactId>
+		<version>0.0.1</version>
+	</parent>
+	
+	<artifactId>ProbeDockMultiModule4</artifactId>
+	
+	<packaging>pom</packaging>
+	
+	<licenses>
+		<license>
+			<name>MIT License</name>
+			<url>http://www.opensource.org/licenses/mit-license.php</url>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<name>Laurent Prevost</name>
+			<email>laurent.prevost@probedock.io</email>
+			<organization>https://github.com/probedock</organization>
+		</developer>
+	</developers>
+
+	<modules>
+		<module>ProbeDockMultiModule4-Sub1</module>
+		<module>ProbeDockMultiModule4-Sub2</module>
+	</modules>
+	
+	<properties>
+		<!--
+			To make sure the submodules will find the configuration file, we 
+			modify the path to access the config file.
+		-->
+		<probedock.config.file>${basedir}/../../target/test-classes/probedock.yml</probedock.config.file>
+	</properties>
+</project>
