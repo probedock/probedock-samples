@@ -56,7 +56,7 @@
 			           to set the project version. Because of that, it will not be possible to send the tests
 			           results to Probe Dock if the root pom project is not run a first time before the other
 			           modules. If you do not want to use maven filtering, you can use src/main/resources to
-			           store the file.
+			           gitstore the file.
 		-->
 		<probedock.config.file>${basedir}/../target/test-classes/probedock.yml</probedock.config.file>
 	</properties>
@@ -158,7 +158,7 @@
 		<plugins>
 			<plugin>
 				<groupId>io.probedock.maven.plugins</groupId>
-				<artifactId>probedock-uuid-maven-plugin</artifactId>
+				<artifactId>probedock-uid-maven-plugin</artifactId>
 				<!--
 					The role of this plugin is to ensure that we have one and only one
 					report uid generated per execution context.
@@ -166,6 +166,8 @@
 					we store it in the properties to reuse it.
 					This will ensure that all the tests results executed in from a root
 					pom project will appear in the same report on Probe Dock.
+					If the environment variable PROBEDOCK_TEST_REPORT_UID is already set
+					the plugin will use the value and will not generate a new one.
 				-->
 				<executions>
 					<execution>
